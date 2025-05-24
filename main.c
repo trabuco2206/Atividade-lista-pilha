@@ -2,160 +2,259 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
+
 #define TAMANHO 100
 
-typedef struct {
-
+typedef struct
+{
     int dados[TAMANHO];
     int topo;
 } Pilha;
 
-void inicializar(Pilha *p) {
+void inicializar(Pilha *p)
+{
     p->topo = -1;
 }
 
-bool isEmpty(Pilha *p) {
+bool isEmpty(Pilha *p)
+{
     return p->topo == -1;
 }
 
-bool isFull(Pilha *p) {
+bool isFull(Pilha *p)
+{
     return p->topo == TAMANHO - 1;
 }
 
-void push(Pilha *p, int dado) {
-    if (isFull(p)) {
-        printf("Pilha Cheia!\n");
+void push(Pilha *p, int dado)
+{
+    if (isFull(p))
+    {
+        printf("Pilha cheia!\n");
         return;
     }
     p->dados[++p->topo] = dado;
 }
 
-int pop(Pilha *p) {
-    if (isEmpty(p)) {
-        printf("Pilha Vazia!\n");
+int pop(Pilha *p)
+{
+    if (isEmpty(p))
+    {
+        printf("Pilha vazia!\n");
         return -1;
     }
     return p->dados[p->topo--];
 }
 
-void imprime_pilha(Pilha *p) {
-    if (isEmpty(p)) {
-        printf("Pilha Vazia\n");
+void imprime_pilha(Pilha *p)
+{
+    if (isEmpty(p))
+    {
+        printf("Pilha vazia!\n");
         return;
     }
     for (int i = 0; i <= p->topo; i++)
+    {
         printf("%d -> ", p->dados[i]);
+    }
     printf("topo\n");
 }
 
-void inverter_vetor(int vetor[], int tamanho) {
+void inverter_vetor()
+{
+    int vetor[TAMANHO], n;
     Pilha p;
     inicializar(&p);
-    for (int i = 0; i < tamanho; i++)
+
+    printf("Quantos elementos no vetor? ");
+    scanf("%d", &n);
+
+    printf("Digite os %d elementos:\n", n);
+    for (int i = 0; i < n; i++)
+    {
+        scanf("%d", &vetor[i]);
         push(&p, vetor[i]);
-    for (int i = 0; i < tamanho; i++)
+    }
+
+    printf("Vetor invertido: ");
+    for (int i = 0; i < n; i++)
+    {
         vetor[i] = pop(&p);
+        printf("%d ", vetor[i]);
+    }
+    printf("\n");
 }
 
-bool verifica_palindromo(char palavra[]) {
+void verificar_palindromo()
+{
+    char palavra[100];
     Pilha p;
     inicializar(&p);
-    int tamanho = strlen(palavra);
-    for (int i = 0; i < tamanho; i++)
+
+    printf("Digite uma palavra: ");
+    scanf("%s", palavra);
+
+    int len = strlen(palavra);
+    for (int i = 0; i < len; i++)
+    {
         push(&p, palavra[i]);
-    for (int i = 0; i < tamanho; i++)
-        if (pop(&p) != palavra[i])
-            return false;
-    return true;
+    }
+
+    bool palindromo = true;
+    for (int i = 0; i < len; i++)
+    {
+        if (palavra[i] != pop(&p))
+        {
+            palindromo = false;
+            break;
+        }
+    }
+
+    if (palindromo)
+        printf("É palíndromo!\n");
+    else
+        printf("Não é palíndromo.\n");
 }
 
-void desfazer_refazer_demo() {
+void desfazer_refazer()
+{
     Pilha desfazer, refazer;
     inicializar(&desfazer);
     inicializar(&refazer);
 
-    push(&desfazer, 1);
-    push(&desfazer, 2);
-    push(&desfazer, 3);
+    int n;
+    printf("Quantas ações deseja registrar? ");
+    scanf("%d", &n);
 
-    printf("Desfazendo: %d\n", pop(&desfazer));
-    printf("Desfazendo: %d\n", pop(&desfazer));
+    for (int i = 0; i < n; i++)
+    {
+        int acao;
+        printf("Digite a ação %d (número inteiro): ", i + 1);
+        scanf("%d", &acao);
+        push(&desfazer, acao);
+    }
 
-    push(&refazer, 2);
-    push(&refazer, 1);
+    int ultima = pop(&desfazer);
+    push(&refazer, ultima);
+    printf("Desfez ação: %d\n", ultima);
 
-    printf("Refazendo: %d\n", pop(&refazer));
-    printf("Refazendo: %d\n", pop(&refazer));
+    ultima = pop(&refazer);
+    push(&desfazer, ultima);
+    printf("Refez ação: %d\n", ultima);
 }
 
-void remover_pares(Pilha *orig) {
-    Pilha aux;
+void remover_pares()
+{
+    Pilha p, aux;
+    inicializar(&p);
     inicializar(&aux);
-    while (!isEmpty(orig)) {
-        int val = pop(orig);
+
+    int n;
+    printf("Quantos elementos deseja inserir na pilha? ");
+    scanf("%d", &n);
+
+    printf("Digite os %d elementos:\n", n);
+    for (int i = 0; i < n; i++)
+    {
+        int x;
+        scanf("%d", &x);
+        push(&p, x);
+    }
+
+    while (!isEmpty(&p))
+    {
+        int val = pop(&p);
         if (val % 2 != 0)
+        {
             push(&aux, val);
+        }
     }
 
-    Pilha temp;
-    inicializar(&temp);
-    while (!isEmpty(&aux)) {
-        push(&temp, pop(&aux));
+    while (!isEmpty(&aux))
+    {
+        push(&p, pop(&aux));
     }
-    *orig = temp;
+
+    printf("Pilha sem pares: ");
+    imprime_pilha(&p);
 }
 
-void ordenar_pilha(Pilha *orig) {
-    Pilha aux;
+void ordenar_pilha()
+{
+    Pilha p, aux;
+    inicializar(&p);
     inicializar(&aux);
-    while (!isEmpty(orig)) {
-        int temp = pop(orig);
+
+    int n;
+    printf("Quantos elementos deseja inserir na pilha? ");
+    scanf("%d", &n);
+
+    printf("Digite os %d elementos:\n", n);
+    for (int i = 0; i < n; i++)
+    {
+        int x;
+        scanf("%d", &x);
+        push(&p, x);
+    }
+
+    while (!isEmpty(&p))
+    {
+        int temp = pop(&p);
         while (!isEmpty(&aux) && aux.dados[aux.topo] > temp)
-            push(orig, pop(&aux));
+        {
+            push(&p, pop(&aux));
+        }
         push(&aux, temp);
     }
 
     while (!isEmpty(&aux))
-        push(orig, pop(&aux));
+    {
+        push(&p, pop(&aux));
+    }
+
+    printf("Pilha ordenada: ");
+    imprime_pilha(&p);
 }
 
-int main() {
-    int vetor[] = {1, 2, 3, 4, 5};
-    inverter_vetor(vetor, 5);
-    printf("Vetor invertido: ");
-    for (int i = 0; i < 5; i++) printf("%d ", vetor[i]);
-    printf("\n");
+int main()
+{
+    int opcao;
+    do
+    {
+        printf("\n==== MENU ====\n");
+        printf("1. Inverter vetor\n");
+        printf("2. Verificar palíndromo\n");
+        printf("3. Simular desfazer/refazer\n");
+        printf("4. Remover pares de uma pilha\n");
+        printf("5. Ordenar uma pilha\n");
+        printf("0. Sair\n");
+        printf("Escolha uma opção: ");
+        scanf("%d", &opcao);
 
-    char palavra[100];
-    printf("Digite uma palavra para verificar palíndromo: ");
-    scanf("%s", palavra);
-    if (verifica_palindromo(palavra))
-        printf("É palíndromo!\n");
-    else
-        printf("Não é palíndromo.\n");
-
-    desfazer_refazer_demo();
-
-    Pilha p;
-    inicializar(&p);
-    push(&p, 1);
-    push(&p, 2);
-    push(&p, 3);
-    push(&p, 4);
-    push(&p, 5);
-    remover_pares(&p);
-    printf("Pilha sem pares: ");
-    imprime_pilha(&p);
-
-    Pilha p2;
-    inicializar(&p2);
-    push(&p2, 3);
-    push(&p2, 1);
-    push(&p2, 4);
-    push(&p2, 2);
-    ordenar_pilha(&p2);
-    printf("Pilha ordenada: ");
-    imprime_pilha(&p2);
+        switch (opcao)
+        {
+        case 1:
+            inverter_vetor();
+            break;
+        case 2:
+            verificar_palindromo();
+            break;
+        case 3:
+            desfazer_refazer();
+            break;
+        case 4:
+            remover_pares();
+            break;
+        case 5:
+            ordenar_pilha();
+            break;
+        case 0:
+            printf("Saindo...\n");
+            break;
+        default:
+            printf("Opção inválida!\n");
+        }
+    } while (opcao != 0);
 
     return 0;
 }
